@@ -25,7 +25,6 @@ func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&model.DeliveryDriver{})
 	db.AutoMigrate(&model.OrderStatus{})
 	db.AutoMigrate(&model.OrderMenuItem{})
-	db.AutoMigrate(&model.OderStatus{})
 	db.AutoMigrate(&model.MenuItem{})
 	db.AutoMigrate(&model.Restaurant{})
 	db.AutoMigrate(&model.Payment{})

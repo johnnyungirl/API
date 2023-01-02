@@ -2,6 +2,9 @@ package main
 
 import (
 	"API/database"
+	config "API/util"
+	"fmt"
+	"log"
 )
 
 //cách mặc định foreign key= struct owner's name+ owner's primary key
@@ -54,7 +57,12 @@ type Company struct {
 }
 
 func main() {
-	dsn := "postgres://postgres:den@localhost:5439/fooddelivery"
+	config, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalln("Enviroment file no found")
+
+	}
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", config.Db.Username, config.Db.Password, config.Db.Host, config.Db.Port, config.Db.Dbname)
 	db := database.ConnectDB(dsn)
 	database.Migrate(db)
 

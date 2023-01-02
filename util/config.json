@@ -1,9 +1,9 @@
 {
     "db":{
-        "address":"localhost",
-        "port":"5439",
+        "username":"postgres",
         "password":"den",
-        "user":"postgres",
+        "host":"localhost",
+        "port":"5439",
         "dbname":"fooddelivery"
     },
     "server":{

@@ -154,3 +154,40 @@ type Contract struct {
 	BankBranch        string    `gorm:"type:varchar(500)" json:"bank branch"`
 	PartnerID         uuid.UUID
 }
+
+func (Partner) TableName() string {
+	return "Partner"
+}
+func (Customer) TableName() string {
+	return "Customer"
+}
+func (Address) TableName() string {
+	return "Address"
+}
+func (Country) TableName() string {
+	return "Country"
+}
+func (CustomerAddress) TableName() string {
+	return "CustomerAddress"
+}
+func (DeliveryDriver) TableName() string {
+	return "DeliveryDriver"
+}
+func (OrderStatus) TableName() string {
+	return "OrderStatus"
+}
+func (OrderMenuItem) TableName() string {
+	return "OrderMenuItem"
+}
+func (MenuItem) TableName() string {
+	return "MenuItem"
+}
+func (Restaurant) TableName() string {
+	return "Restaurant"
+}
+func (Payment) TableName() string {
+	return "Payment"
+}
+func (Contract) TableName() string {
+	return "Contract"
+}
