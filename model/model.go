@@ -1,9 +1,11 @@
 package model
 
 import (
+	"log"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Partner data model
@@ -21,7 +23,7 @@ type Partner struct {
 	Contract           []Contract
 }
 
-//Delivery guys data model
+// Delivery guys data model
 type DeliveryDriver struct {
 	ID                uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();PrimaryKey" json:"id"`
 	Name              string    `gorm:"type:varchar(400)" json:"name"`
@@ -40,19 +42,20 @@ type Customer struct {
 	PhoneNumber     string    `gorm:"type:varchar(50)" json:"phone number"`
 	Address         string    `gorm:"type:varchar(500)" json:"address"`
 	Email           string    `gorm:"type:varchar(400)" json:"email"`
+	Password        string    `gorm:"type:varchar(500)" json:"password"`
 	CustomerAddress []CustomerAddress
 	FoodOrder       []FoodOrder
 	Payment         []Payment
 }
 
-//Country name data model
+// Country name data model
 type Country struct {
 	ID          string `gorm:"type:varchar(10);PrimaryKey" json:"id"`
 	CountryName string `gorm:"type:varchar(500)" json:"country name"`
 	Address     []Address
 }
 
-//Restaurant/Store and Customer address data model
+// Restaurant/Store and Customer address data model
 type Address struct {
 	ID              uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();PrimaryKey" json:"id"`
 	UnitNumber      int       `gorm:"type:int" json:"No"`
@@ -68,7 +71,7 @@ type Address struct {
 	CustomerAddress []CustomerAddress
 }
 
-//Store/Restaurant of Partner data model
+// Store/Restaurant of Partner data model
 type Restaurant struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();PrimaryKey" json:"ID"`
 	Name      string    `gorm:"type:varchar(500)" json:"name"`
@@ -84,7 +87,7 @@ type OderStatus struct {
 	StatusValue string `gorm:"varchar(100)" json:"status value"`
 }
 
-//FoodOrder data model
+// FoodOrder data model
 type FoodOrder struct {
 	ID                        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();PrimaryKey" json:"ID"`
 	Status                    string    `gorm:"type:varchar(200)" json:"status"`
@@ -103,7 +106,7 @@ type FoodOrder struct {
 	OrderMenuItem             []OrderMenuItem
 }
 
-//Customer address data model
+// Customer address data model
 type CustomerAddress struct {
 	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();PrimaryKey"`
 	AddressID  uuid.UUID
@@ -116,7 +119,7 @@ type OrderStatus struct {
 	FoodOrder   []FoodOrder
 }
 
-//Menu data model
+// Menu data model
 type MenuItem struct {
 	ID            uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();PrimaryKey" json:"id"`
 	ItemName      string    `gorm:"type:varchar(300)" json:"item name"`
@@ -126,7 +129,7 @@ type MenuItem struct {
 	OrderMenuItem []OrderMenuItem
 }
 
-//OrderMenuItem show item that ordered
+// OrderMenuItem show item that ordered
 type OrderMenuItem struct {
 	ID              uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	QuantityOrdered int       `gorm:"type:int" json:"quantity ordered"`
@@ -134,7 +137,7 @@ type OrderMenuItem struct {
 	FoodOrderID     uuid.UUID
 }
 
-//Payment show type customer can pay
+// Payment show type customer can pay
 type Payment struct {
 	ID          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	PayMentDate time.Time
@@ -156,38 +159,61 @@ type Contract struct {
 }
 
 func (Partner) TableName() string {
-	return "Partner"
+	return "partner"
 }
 func (Customer) TableName() string {
-	return "Customer"
+	return "customer"
 }
 func (Address) TableName() string {
-	return "Address"
+	return "address"
 }
 func (Country) TableName() string {
-	return "Country"
+	return "country"
 }
 func (CustomerAddress) TableName() string {
-	return "CustomerAddress"
+	return "customer_address"
 }
 func (DeliveryDriver) TableName() string {
-	return "DeliveryDriver"
+	return "delivery_driver"
 }
 func (OrderStatus) TableName() string {
-	return "OrderStatus"
+	return "order_status"
 }
 func (OrderMenuItem) TableName() string {
-	return "OrderMenuItem"
+	return "order_menu_item"
 }
 func (MenuItem) TableName() string {
-	return "MenuItem"
+	return "menu_item"
 }
 func (Restaurant) TableName() string {
-	return "Restaurant"
+	return "restaurant"
 }
 func (Payment) TableName() string {
-	return "Payment"
+	return "payment"
 }
 func (Contract) TableName() string {
-	return "Contract"
+	return "contract"
 }
+
+// Function Hashing to protect password
+type PasswordHandle interface {
+	PasswordHash(password string)
+	CheckPassword(Providedpassword string)
+}
+
+func (customer *Customer) PasswordHash(password string) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatal("Error while hashing password")
+	}
+	customer.Password = string(hash)
+}
+func (customer *Customer) CheckPassword(Providedpassword string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(customer.Password), []byte(Providedpassword))
+	if err!=nil{
+		log.Fatal("Wrong password")
+	}
+	return err
+}
+
+

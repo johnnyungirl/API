@@ -2,6 +2,7 @@ package main
 
 import (
 	"API/database"
+	"API/route"
 	config "API/util"
 	"fmt"
 	"log"
@@ -44,19 +45,8 @@ import (
 // 	UserNumber string
 // }
 // User has many CreditCards, UserID is the foreign key
-type Employee struct {
-	ID        int
-	Name      string
-	CompanyID string
-}
-type Company struct {
-	ID       int
-	Code     string
-	Name     string
-	Employee []Employee `gorm:":references:Code"`
-}
-
 func main() {
+	
 	config, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalln("Enviroment file no found")
@@ -65,5 +55,7 @@ func main() {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", config.Db.Username, config.Db.Password, config.Db.Host, config.Db.Port, config.Db.Dbname)
 	db := database.ConnectDB(dsn)
 	database.Migrate(db)
+	route.SetupRoutes(db)
+	
 
 }
